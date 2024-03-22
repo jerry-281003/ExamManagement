@@ -1,0 +1,23 @@
+﻿@model ExamManagement.Models.CreateExamQuestionsViewModel
+
+@{
+    ViewData["Title"] = "Create Exam Questions";
+}
+
+<h1>Create Exam Questions</h1>
+
+<form asp-action="CreateExamQuestions">
+   
+    <div class="form-group">
+        <label for="CourseName">Course Name:</label>
+        <input type="text" id="CourseName" name="CourseName" class="form-control" />
+        <span asp-validation-for="CourseName" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="NumberOfQuestions">Number of Questions:</label>
+        <input type="number" id="NumberOfQuestions" name="numberOfQuestions" class="form-control" min="1" required />
+        <span asp-validation-for="NumberOfQuestions" class="text-danger"></span>
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="submit" value="Create Exam" class="btn btn-primary" />
+</form>
