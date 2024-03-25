@@ -1,0 +1,54 @@
+﻿@model List<ExamManagement.Models.QuestionViewModel2>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Review</title>
+    <style>
+        /* Add your CSS styles here */
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .option-list {
+            list-style-type: upper-alpha;
+            padding-left: 20px;
+        }
+
+        .option-item {
+            margin-bottom: 5px;
+        }
+
+        .correct-answer {
+            color: green;
+            font-weight: bold;
+        }
+
+        .your-answer {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Exam Review</h1>
+
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        <div class="question">
+            <h2>Question @(i + 1)</h2>
+            <p>@Model[i].QuestionText</p>
+
+            <ul class="option-list">
+                @foreach (var option in Model[i].Options)
+                {
+                    var optionIndex = Model[i].Options.IndexOf(option);
+                    <li class="option-item @(option.OptionID == Model[i].SelectoptionId ? "your-answer" : "") @(option.OptionID == Model[i].CorrectAnswerId ? "correct-answer" : "")">
+                        @option.OptionText
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</body>
+</html>

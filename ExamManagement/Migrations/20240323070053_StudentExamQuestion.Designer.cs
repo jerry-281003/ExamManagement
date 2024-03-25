@@ -4,6 +4,7 @@ using ExamManagement.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamManagement.Migrations
 {
     [DbContext(typeof(ExamManagementContext))]
-    partial class ExamManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20240323070053_StudentExamQuestion")]
+    partial class StudentExamQuestion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -153,9 +156,6 @@ namespace ExamManagement.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ExamQuestionID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ExamTimes")
                         .HasColumnType("int");
 
                     b.Property<int>("OptionID")

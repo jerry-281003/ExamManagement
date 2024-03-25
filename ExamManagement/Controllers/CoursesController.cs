@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExamManagement.Data;
 using ExamManagement.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace ExamManagement.Controllers
 {
@@ -16,19 +18,21 @@ namespace ExamManagement.Controllers
 
         public CoursesController(ExamManagementContext context)
         {
-            _context = context;
+			_context = context;
         }
 
-        // GET: Courses
-        public async Task<IActionResult> Index()
+		// GET: Courses
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Index()
         {
               return _context.Course != null ? 
                           View(await _context.Course.ToListAsync()) :
                           Problem("Entity set 'ExamManagementContext.Course'  is null.");
         }
 
-        // GET: Courses/Details/5
-        public async Task<IActionResult> Details(int? id)
+		// GET: Courses/Details/5
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Course == null)
             {
@@ -45,8 +49,9 @@ namespace ExamManagement.Controllers
             return View(course);
         }
 
-        // GET: Courses/Create
-        public IActionResult Create()
+		[Authorize(Roles = "Admin")]
+		// GET: Courses/Create
+		public IActionResult Create()
         {
             return View();
         }
@@ -67,8 +72,9 @@ namespace ExamManagement.Controllers
             return View(course);
         }
 
-        // GET: Courses/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+		[Authorize(Roles = "Admin")]
+		// GET: Courses/Edit/5
+		public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Course == null)
             {
@@ -117,9 +123,9 @@ namespace ExamManagement.Controllers
             }
             return View(course);
         }
-
-        // GET: Courses/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+		[Authorize(Roles = "Admin")]
+		// GET: Courses/Delete/5
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Course == null)
             {
@@ -135,9 +141,9 @@ namespace ExamManagement.Controllers
 
             return View(course);
         }
-
-        // POST: Courses/Delete/5
-        [HttpPost, ActionName("Delete")]
+		[Authorize(Roles = "Admin")]
+		// POST: Courses/Delete/5
+		[HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

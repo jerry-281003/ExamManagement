@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.Collections.Generic;
+using System.IO;
 
 namespace ExamManagement.Models
 {
@@ -11,4 +13,6 @@ namespace ExamManagement.Models
         public string ExamName { get; set; }
         public int Duration { get; set; }
     }
+
+    
 }

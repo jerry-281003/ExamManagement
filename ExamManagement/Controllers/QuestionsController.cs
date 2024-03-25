@@ -9,6 +9,8 @@ using ExamManagement.Data;
 using ExamManagement.Models;
 using System.Drawing.Text;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace ExamManagement.Controllers
 {
@@ -17,20 +19,20 @@ namespace ExamManagement.Controllers
         private readonly ExamManagementContext _context;
 
         public QuestionsController(ExamManagementContext context)
-        {
+		{
             _context = context;
         }
-
-        // GET: Questions
-        public async Task<IActionResult> Index()
+		[Authorize(Roles = "Admin")]
+		// GET: Questions
+		public async Task<IActionResult> Index()
         {
               return _context.Question != null ? 
                           View(await _context.Question.ToListAsync()) :
                           Problem("Entity set 'ExamManagementContext.Question'  is null.");
         }
-
-        // GET: Questions/Details/5
-        public async Task<IActionResult> Details(int? id)
+		[Authorize(Roles = "Admin")]
+		// GET: Questions/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             try
             {
@@ -66,9 +68,9 @@ namespace ExamManagement.Controllers
                 return StatusCode(500, "An error occurred while processing the request.");
             }
         }
-
-        // GET: Questions/Create
-        public IActionResult Create()
+		[Authorize(Roles = "Admin")]
+		// GET: Questions/Create
+		public IActionResult Create()
         {
             ViewData["CourseID"] = new SelectList(_context.Course, "CourseID", "CourseID");
             return View();
@@ -79,7 +81,8 @@ namespace ExamManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Question question, List<Option> options, int correctOption)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Create(Question question, List<Option> options, int correctOption)
         {
             if (ModelState.IsValid)
             {
@@ -107,7 +110,7 @@ namespace ExamManagement.Controllers
             return View(question);
         }
 
-
+		[Authorize(Roles = "Admin")]
 		// GET: Questions/Edit/5
 		public async Task<IActionResult> Edit(int? id)
         {
@@ -131,7 +134,8 @@ namespace ExamManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Question question)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Edit(int id, Question question)
         {
             if (id != question.QuestionID)
             {
@@ -162,8 +166,9 @@ namespace ExamManagement.Controllers
         }
 
 
-        // GET: Questions/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+		// GET: Questions/Delete/5
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Question == null)
             {
@@ -183,7 +188,8 @@ namespace ExamManagement.Controllers
         // POST: Questions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Question == null)
             {

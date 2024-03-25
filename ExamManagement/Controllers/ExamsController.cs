@@ -7,7 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExamManagement.Data;
 using ExamManagement.Models;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Rotativa.AspNetCore;
+using iText.Kernel.Pdf;
+using iText.Layout.Element;
+using iText.Layout;
+using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace ExamManagement.Controllers
 {
@@ -16,20 +22,21 @@ namespace ExamManagement.Controllers
         private readonly ExamManagementContext _context;
 
         public ExamsController(ExamManagementContext context)
-        {
+		{
             _context = context;
         }
-
-        // GET: Exams
-        public async Task<IActionResult> Index()
+		[Authorize(Roles = "Admin")]
+		// GET: Exams
+		public async Task<IActionResult> Index()
         {
               return _context.Exam != null ? 
                           View(await _context.Exam.ToListAsync()) :
                           Problem("Entity set 'ExamManagementContext.Exam'  is null.");
         }
 
-        // GET: Exams/Details/5
-        public async Task<IActionResult> Details(int? id)
+		// GET: Exams/Details/5
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Exam == null)
             {
@@ -45,9 +52,9 @@ namespace ExamManagement.Controllers
 
             return View(exam);
         }
-
-        // GET: Exams/Create
-        public IActionResult Create()
+		[Authorize(Roles = "Admin")]
+		// GET: Exams/Create
+		public IActionResult Create()
         {
             ViewData["CourseName"] = new SelectList(_context.Course, "CourseName", "CourseName");
             return View();
@@ -68,9 +75,11 @@ namespace ExamManagement.Controllers
             }
             return View(exam);
         }
-        public async Task<IActionResult> CreateExamQuestions(int? id)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> CreateExamQuestions(int? id)
         {
-            if(id == null || _context.Exam == null)
+            ViewData["CourseName"] = new SelectList(_context.Course, "CourseName", "CourseName");
+            if (id == null || _context.Exam == null)
             {
                 return NotFound();
             }
@@ -84,8 +93,8 @@ namespace ExamManagement.Controllers
            
             return View(viewModel);
         }
-
-        [HttpPost]
+		[Authorize(Roles = "Admin")]
+		[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateExamQuestions(int id,CreateExamQuestionsViewModel viewModel)
         {
@@ -138,11 +147,77 @@ namespace ExamManagement.Controllers
             // If ModelState is not valid, redisplay the form with errors
             return View(viewModel);
         }
+		[Authorize(Roles = "Admin")]
+		public IActionResult ExportToPdf(int id)
+		{
+			var examName = _context.Exam
+		        .Where(e => e.ExamID == id)
+		        .Select(e => e.ExamName)
+		        .FirstOrDefault();
+			var questionModels = _context.ExamQuestion
+				.Where(eq => eq.ExamID == id)
+				.Select(eq => new QuestionModel
+				{
+					QuestionId = eq.QuestionID,
+					QuestionText = _context.Question
+						.Where(q => q.QuestionID == eq.QuestionID)
+						.Select(q => q.QuestionText)
+						.FirstOrDefault(),
+					Options = _context.Option
+						.Where(o => o.QuestionID == eq.QuestionID)
+						.ToList()
+				})
+				.ToList();
+
+			var sanitizedExamName = RemoveSpecialCharacters(examName);
+			var pdfFileName = $"{sanitizedExamName}.pdf";
+			// Create a new PDF document
+			var pdfPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), pdfFileName);
+			var pdfDoc = new PdfDocument(new PdfWriter(pdfPath));
+
+			// Create a document to add content
+			var document = new Document(pdfDoc);
+			var questionNumber = 1;
 
 
-		
+			// Add content to the PDF document based on your questionModels
+			foreach (var question in questionModels)
+			{
+				// Add question number
+				document.Add(new Paragraph($"Question {questionNumber}: {question.QuestionText}"));
+
+				// Counter for option letter
+				var optionLetter = 'a';
+
+				foreach (var option in question.Options)
+				{
+					// Add option with letter
+					document.Add(new Paragraph($"{optionLetter++}. {option.OptionText}"));
+				}
+
+				// Increment question number
+				questionNumber++;
+
+				// Add a new line after each question
+				document.Add(new Paragraph("\n"));
+			}
+
+			// Close the document
+			document.Close();
+
+			// Return the file as a file download response
+			return RedirectToAction("Index");
 
 
+
+		}
+		private string RemoveSpecialCharacters(string str)
+		{
+			return Regex.Replace(str, "[^a-zA-Z0-9]+", "", RegexOptions.Compiled);
+		}
+
+
+		[Authorize(Roles = "Admin")]
 		// GET: Exams/Edit/5
 		public async Task<IActionResult> Edit(int? id)
         {
@@ -164,7 +239,8 @@ namespace ExamManagement.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ExamID,CourseName,Date,ExamName,Duration")] Exam exam)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Edit(int id, [Bind("ExamID,CourseName,Date,ExamName,Duration")] Exam exam)
         {
             if (id != exam.ExamID)
             {
@@ -194,8 +270,9 @@ namespace ExamManagement.Controllers
             return View(exam);
         }
 
-        // GET: Exams/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+		// GET: Exams/Delete/5
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Exam == null)
             {
@@ -215,7 +292,8 @@ namespace ExamManagement.Controllers
         // POST: Exams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Exam == null)
             {

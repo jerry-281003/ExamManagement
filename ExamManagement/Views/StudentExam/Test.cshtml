@@ -1,0 +1,31 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Questions</title>
+</head>
+<body>
+    <h1>Exam Questions</h1>
+
+    <form asp-action="SaveExamAnswers" method="post">
+        @for (var i = 0; i < Model.questionModels.Count; i++)
+        {
+            <div>
+                <input type="hidden" name="examQuestionIds[@i]" value="@Model.questionModels[i].QuestionId" />
+                <h2>Question @(i + 1)</h2>
+                <p>@Model.questionModels[i].QuestionText</p>
+                @for (var j = 0; j < Model.questionModels[i].Options.Count; j++)
+                {
+                    <div>
+                        <input type="radio" id="option-@(i + 1)-@(j + 1)" name="selectedOptions[@i]" value="@Model.questionModels[i].Options[j].OptionID">
+                        <label for="option-@(i + 1)-@(j + 1)">@Model.questionModels[i].Options[j].OptionText</label>
+                    </div>
+                }
+            </div>
+            <hr />
+        }
+
+        <button type="submit">Submit Answers</button>
+    </form>
+</body>
+</html>

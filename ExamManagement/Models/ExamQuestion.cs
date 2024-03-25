@@ -19,4 +19,12 @@ namespace ExamManagement.Models
 		public int NumberOfQuestions { get; set; }
 		public int ExamID { get; internal set; }
 	}
+    public class ExamQuestionViewModel
+    {
+		public List<QuestionModel> questionModels { get; set; }
+	}
+    public class ReviewExamQuestionViewModel
+    {
+        public List<QuestionViewModel> questionModels { get; set; }
+    }
 }

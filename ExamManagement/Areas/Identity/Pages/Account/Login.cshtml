@@ -5,61 +5,43 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row">
-    <div class="col-md-4">
-        <section>
-            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
 
-
-                <div form-group>
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
-                    <label asp-for="Input.Email" class="form-label"></label>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form id="loginForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div class="form-group">
+                    <label for="inputEmail">Email</label>
+                    <input asp-for="Input.Email" class="form-control" id="inputEmail" autocomplete="username" aria-describedby="emailHelp" placeholder="Enter email">
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
-                    <label asp-for="Input.Password" class="form-label"></label>
+                    <label for="inputPassword">Password</label>
+                    <input asp-for="Input.Password" type="password" class="form-control" id="inputPassword" autocomplete="current-password" placeholder="Password">
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
-
-                <div class="form-group">
-                </div>
-                <button id="registerSubmit" type="submit" class="btn btn-cta btn-cstm-success">Login</button>
-
+                <button id="loginSubmit" type="submit" class="btn btn-primary">Login</button>
             </form>
-        </section>
+        </div>
     </div>
-</div>
-<div class="col-md-6 col-md-offset-2">
-    <section>
 
-        @{
-            if ((Model.ExternalLogins?.Count ?? 0) == 0)
-            {
-                <div>
-                    <p>
-
-                    </p>
-                </div>
-            }
-            else
-            {
-                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                    <div>
-                        <p>
-                            @foreach (var provider in Model.ExternalLogins!)
-                            {
-                                <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
-                            }
-                        </p>
+    @if (Model.ExternalLogins?.Count > 0)
+    {
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-6">
+                <p>Or login using:</p>
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div class="btn-group" role="group">
+                        @foreach (var provider in Model.ExternalLogins)
+                        {
+                            <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name">@provider.DisplayName</button>
+                        }
                     </div>
                 </form>
-            }
-        }
-    </section>
-    </div>
- 
+            </div>
+        </div>
+    }
 </div>
 
 @section Scripts {

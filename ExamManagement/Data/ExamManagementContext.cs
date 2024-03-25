@@ -27,5 +27,6 @@ namespace ExamManagement.Data
 
         public DbSet<ExamManagement.Models.Exam> Exam { get; set; } = default!;
 		public DbSet<ExamManagement.Models.ApplicationUser> ApplicationUser { get; set; } = default!;
-	}
+        public DbSet<ExamManagement.Models.StudentExamQuestion> StudentExamQuestion { get; set; } = default!;
+    }
 }
